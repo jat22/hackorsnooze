@@ -26,7 +26,15 @@ function generateStoryMarkup(story) {
   const hostName = story.getHostName();
   return $(`
       <li id="${story.storyId}">
-        <i class="fav fa-regular fa-star"></i>
+        <span class="delete hidden">
+          <i class="delete fa-solid fa-trash-can"></i>
+        </span>
+        <span class="no-fav hidden">
+          <i class="no-fav fa-regular fa-star"></i>
+        </span>
+        <span class="fav hidden">
+          <i class="fav fa-solid fa-star"></i>
+        </span>
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
         </a>
@@ -37,56 +45,68 @@ function generateStoryMarkup(story) {
     `);
 }
 
-function generateFavoriteMarkup(story) {
-  // console.debug("generateStoryMarkup", story);
+// function generateFavoriteMarkup(story) {
+//   // console.debug("generateStoryMarkup", story);
 
-  const hostName = story.getHostName();
-  return $(`
-      <li id="${story.storyId}">
-        <i class="fav fa-solid fa-star"></i>
-        <a href="${story.url}" target="a_blank" class="story-link">
-          ${story.title}
-        </a>
-        <small class="story-hostname">(${hostName})</small>
-        <small class="story-author">by ${story.author}</small>
-        <small class="story-user">posted by ${story.username}</small>
-      </li>
-    `);
-}
+//   const hostName = story.getHostName();
+//   return $(`
+//       <li id="${story.storyId}">
+//       <i class="delete fa-solid fa-trash-can hidden"></i>
+//         <i class="fav fa-solid fa-star"></i>
+//         <a href="${story.url}" target="a_blank" class="story-link">
+//           ${story.title}
+//         </a>
+//         <small class="story-hostname">(${hostName})</small>
+//         <small class="story-author">by ${story.author}</small>
+//         <small class="story-user">posted by ${story.username}</small>
+//       </li>
+//     `);
+// }
 
-function generateMyStoriesMarkup(story) {
-  // console.debug("generateStoryMarkup", story);
+// function generateMyStoriesMarkup(story) {
+//   // console.debug("generateStoryMarkup", story);
 
-  const hostName = story.getHostName();
-  return $(`
-      <li id="${story.storyId}">
-        <i class="delete fa-solid fa-trash-can"></i>
-        <i class="fav fa-solid fa-star"></i>
-        <a href="${story.url}" target="a_blank" class="story-link">
-          ${story.title}
-        </a>
-        <small class="story-hostname">(${hostName})</small>
-        <small class="story-author">by ${story.author}</small>
-        <small class="story-user">posted by ${story.username}</small>
-      </li>
-    `);
-}
-
+//   const hostName = story.getHostName();
+//   return $(`
+//       <li id="${story.storyId}">
+//         <i class="delete fa-solid fa-trash-can"></i>
+//         <i class="fav fa-solid fa-star"></i>
+//         <a href="${story.url}" target="a_blank" class="story-link">
+//           ${story.title}
+//         </a>
+//         <small class="story-hostname">(${hostName})</small>
+//         <small class="story-author">by ${story.author}</small>
+//         <small class="story-user">posted by ${story.username}</small>
+//       </li>
+//     `);
+// }
+let something;
 /** Gets list of stories from server, generates their HTML, and puts on page. */
-
 function putStoriesOnPage() {
   console.debug("putStoriesOnPage");
-
   $allStoriesList.empty();
 
   // loop through all of our stories and generate HTML for them
   for (let story of storyList.stories) {
-    const $story = generateStoryMarkup(story);
-    $allStoriesList.append($story);
-  }
+    const favorite = currentUser.favorites.find(function(fav){
+      return (fav.storyId === story.storyId)
+    })
+
+    if(favorite !== undefined){
+        console.log(favorite)
+        const $story = generateStoryMarkup(story);
+        console.log( $story.children('.fav'));
+        $story.children('.fav').removeClass('hidden');
+        $allStoriesList.append($story);
+    } else {
+        // console.log(`#${story.storyId}`)
+        const $story = generateStoryMarkup(story);
+        $story.children('.no-fav').removeClass('hidden');
+        $allStoriesList.append($story);
+    }
+  } 
   $allStoriesList.show();
 }
-
 
 
 async function submitNewStory (evt){
@@ -102,6 +122,7 @@ async function submitNewStory (evt){
   const storyMarkup = generateStoryMarkup(story);
   $allStoriesList.prepend(storyMarkup)
   $newStoryForm.hide()
+  getAndShowStoriesOnStart()
 }
 
 $newStoryForm.on('submit', submitNewStory);

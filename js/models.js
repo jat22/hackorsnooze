@@ -83,7 +83,6 @@ class StoryList {
       })
 
       currentUser = await User.updateCurrentUser()
-      console.log(res)
 
       const storyId = res.data.story.storyId;
       const title = res.data.story.title;
@@ -92,8 +91,6 @@ class StoryList {
       const username = res.data.story.username
       const createdAt = res.data.story.createdAt
       return new Story ({ storyId, title, author, url, username, createdAt })
-
-    // UNIMPLEMENTED: complete this function!
   }
 }
 
@@ -233,20 +230,20 @@ class User {
   }
 
   // ***************************************I think this can be incorporated else where
-  setUiFavs (){
-    const favorites = currentUser.favorites;
-    const favoriteIds = favorites.map(function(story){
-      return story.storyId;
-    })
-    favoriteIds.forEach(function(id){
-      try{
-        $(`#${id} > i`).removeClass("fa-regular").addClass("fa-solid")
-      }
-      catch{
-        return
-      }
-    })
-  }
+  // setUiFavs (){
+  //   const favorites = currentUser.favorites;
+  //   const favoriteIds = favorites.map(function(story){
+  //     return story.storyId;
+  //   })
+  //   favoriteIds.forEach(function(id){
+  //     try{
+  //       $(`#${id} > i`).removeClass("fa-regular").addClass("fa-solid")
+  //     }
+  //     catch{
+  //       return
+  //     }
+  //   })
+  // }
   
   // **************************rename and simplify/rework? 
   //  possibly use this ----- $('element').on('click', '# or .?', function())
@@ -254,30 +251,38 @@ class User {
   // 
 
   async favStoryToggle (evt){
-    if($(evt.target).hasClass('fav')){
-      $(evt.target).toggleClass("fa-regular fa-solid")
-      const $favoriteID = $(evt.target).parent().attr('id')
-
-      if ($(evt.target).hasClass('fa-solid')){
-        console.log($favoriteID)
-        await axios.post(`${BASE_URL}/users/${currentUser.username}/favorites/${$favoriteID}`, 
-        { token : currentUser.loginToken});
-        currentUser = await User.updateCurrentUser()
-      }
-      if ($(evt.target).hasClass('fa-regular')){
-        await axios.delete(`${BASE_URL}/users/${currentUser.username}/favorites/${$favoriteID}`, 
-        { params:{ token : currentUser.loginToken}})
-        currentUser = await User.updateCurrentUser()
-      }
-    }
-    if($(evt.target).hasClass('delete')){
-      const $storyId = $(evt.target).parent().attr('id')
-      
-      await axios.delete(`${BASE_URL}/stories/${$storyId}`, 
-        { params:{ token : currentUser.loginToken}})
-        currentUser = await User.updateCurrentUser()
+    const $evtTarget = $(evt.target);
+    if($evtTarget.hasClass('no-fav')){
+      $evtTarget.
     }
   }
+  
 
 
 }
+
+
+// if($(evt.target).hasClass('fav')){
+  //     $(evt.target).toggleClass("fa-regular fa-solid")
+  //     const $favoriteID = $(evt.target).parent().attr('id')
+
+  //     if ($(evt.target).hasClass('fa-solid')){
+  //       console.log($favoriteID)
+  //       await axios.post(`${BASE_URL}/users/${currentUser.username}/favorites/${$favoriteID}`, 
+  //       { token : currentUser.loginToken});
+  //       currentUser = await User.updateCurrentUser()
+  //     }
+  //     if ($(evt.target).hasClass('fa-regular')){
+  //       await axios.delete(`${BASE_URL}/users/${currentUser.username}/favorites/${$favoriteID}`, 
+  //       { params:{ token : currentUser.loginToken}})
+  //       currentUser = await User.updateCurrentUser()
+  //     }
+  //   }
+  //   if($(evt.target).hasClass('delete')){
+  //     const $storyId = $(evt.target).parent().attr('id')
+      
+  //     await axios.delete(`${BASE_URL}/stories/${$storyId}`, 
+  //       { params:{ token : currentUser.loginToken}})
+  //       currentUser = await User.updateCurrentUser()
+  //   }
+  // }
