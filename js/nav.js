@@ -9,11 +9,7 @@
 function navAllStories(evt) {
   console.debug("navAllStories", evt);
   hidePageComponents();
-  $newStoryForm.hide();
-  $favoriteStoriesList.hide();
-  $myStoriesList.hide();
-  putStoriesOnPage();
-  // currentUser.setUIfavs()
+  putStoriesOnPage(storyList.stories);
 }
 
 $body.on("click", "#nav-all", navAllStories);
@@ -46,40 +42,18 @@ function navSubmitStory (evt){
 
 $navSubmit.on('click', navSubmitStory)
 
-
-// ************************remame to navFavorites
-function showFavoriteStories(){
-  $allStoriesList.hide();
-  $myStoriesList.hide()
-  $newStoryForm.hide();
-  $favoriteStoriesList.empty();
-
-  for (let story of currentUser.favorites) {
-    const $story = generateFavoriteMarkup(story);
-    $favoriteStoriesList.append($story);
-  }
-  $favoritesLoadingMsg.hide();
-  $favoriteStoriesList.show();
+function navFavorites() {
+  hidePageComponents()
+  putStoriesOnPage(currentUser.favorites);
 }
 
-$navFavorites.on('click', showFavoriteStories);
+$navFavorites.on('click', navFavorites)
 
 
-// ***************************rename this to navMyStories
-function showMyStories(){
-  $allStoriesList.hide();
-  $favoriteStoriesList.hide();
-  $newStoryForm.hide();
-  $myStoriesLoadingMsg.show();
-  $myStoriesList.empty();
-
-  for (let story of currentUser.ownStories) {
-    const $story = generateMyStoriesMarkup(story);
-    $myStoriesList.append($story);
-  }
-  $myStoriesLoadingMsg.hide();
-  $myStoriesList.show();
+function navMyStories() {
+  hidePageComponents()
+  putStoriesOnPage(currentUser.ownStories)
 }
 
 // **************************fix typo and update across app (nave to nav)
-$naveMyStories.on('click', showMyStories);
+$naveMyStories.on('click', navMyStories);

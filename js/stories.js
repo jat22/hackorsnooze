@@ -2,7 +2,6 @@
 
 // This is the global list of the stories, an instance of StoryList
 let storyList;
-let favoriteList = [];
 
 /** Get and show stories when site first loads. */
 
@@ -10,7 +9,7 @@ async function getAndShowStoriesOnStart() {
   storyList = await StoryList.getStories();
   $storiesLoadingMsg.remove();
 
-  putStoriesOnPage();
+  putStoriesOnPage(storyList.stories);
 }
 
 /**
@@ -45,68 +44,50 @@ function generateStoryMarkup(story) {
     `);
 }
 
-// function generateFavoriteMarkup(story) {
-//   // console.debug("generateStoryMarkup", story);
 
-//   const hostName = story.getHostName();
-//   return $(`
-//       <li id="${story.storyId}">
-//       <i class="delete fa-solid fa-trash-can hidden"></i>
-//         <i class="fav fa-solid fa-star"></i>
-//         <a href="${story.url}" target="a_blank" class="story-link">
-//           ${story.title}
-//         </a>
-//         <small class="story-hostname">(${hostName})</small>
-//         <small class="story-author">by ${story.author}</small>
-//         <small class="story-user">posted by ${story.username}</small>
-//       </li>
-//     `);
-// }
-
-// function generateMyStoriesMarkup(story) {
-//   // console.debug("generateStoryMarkup", story);
-
-//   const hostName = story.getHostName();
-//   return $(`
-//       <li id="${story.storyId}">
-//         <i class="delete fa-solid fa-trash-can"></i>
-//         <i class="fav fa-solid fa-star"></i>
-//         <a href="${story.url}" target="a_blank" class="story-link">
-//           ${story.title}
-//         </a>
-//         <small class="story-hostname">(${hostName})</small>
-//         <small class="story-author">by ${story.author}</small>
-//         <small class="story-user">posted by ${story.username}</small>
-//       </li>
-//     `);
-// }
-let something;
 /** Gets list of stories from server, generates their HTML, and puts on page. */
-function putStoriesOnPage() {
+function putStoriesOnPage(listofStories) {
   console.debug("putStoriesOnPage");
   $allStoriesList.empty();
-
-  // loop through all of our stories and generate HTML for them
-  for (let story of storyList.stories) {
-    const favorite = currentUser.favorites.find(function(fav){
-      return (fav.storyId === story.storyId)
-    })
-
-    if(favorite !== undefined){
-        console.log(favorite)
-        const $story = generateStoryMarkup(story);
-        console.log( $story.children('.fav'));
-        $story.children('.fav').removeClass('hidden');
-        $allStoriesList.append($story);
-    } else {
-        // console.log(`#${story.storyId}`)
-        const $story = generateStoryMarkup(story);
-        $story.children('.no-fav').removeClass('hidden');
-        $allStoriesList.append($story);
+  if(currentUser === undefined){
+    for (let story of listofStories){
+      const $story = generateStoryMarkup(story)
+      $allStoriesList.append($story)
     }
+  } else {
+  // loop through all of our stories and generate HTML for them
+    for (let story of listofStories) {
+      const favorite = currentUser.favorites.find(function(fav){
+        return (fav.storyId === story.storyId)
+      })
+      const myStory = currentUser.ownStories.find(function(own){
+        return (own.storyId === story.storyId)
+      })
+
+      if(favorite !== undefined){
+          const $story = generateStoryMarkup(story);
+          $story.children('.fav').removeClass('hidden');
+          if(myStory !== undefined){
+            $story.children('.delete').removeClass('hidden');
+            $allStoriesList.append($story);
+        } else {
+            $allStoriesList.append($story);
+        }
+      } else {
+          const $story = generateStoryMarkup(story);
+          $story.children('.no-fav').removeClass('hidden');
+          if(myStory !== undefined){
+            $story.children('.delete').removeClass('hidden');
+            $allStoriesList.append($story);
+          } else {
+            $allStoriesList.append($story);
+        }
+      } 
+    } 
   } 
   $allStoriesList.show();
 }
+
 
 
 async function submitNewStory (evt){
@@ -120,17 +101,16 @@ async function submitNewStory (evt){
 
   const story = await storyList.addStory(currentUser, newStory);
   const storyMarkup = generateStoryMarkup(story);
-  $allStoriesList.prepend(storyMarkup)
-  $newStoryForm.hide()
+  $allStoriesList.prepend(storyMarkup);
+  $newStoryForm.trigger('reset');
+  $newStoryForm.hide();
   getAndShowStoriesOnStart()
 }
 
 $newStoryForm.on('submit', submitNewStory);
 
-// ************where should this go???
 $('ol').on('click', async function(evt){
-  console.log('ol')
-  await currentUser.favStoryToggle(evt)
+  await currentUser.favAndRemoveActions(evt)
 });
 
 

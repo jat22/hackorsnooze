@@ -229,60 +229,35 @@ class User {
       );
   }
 
-  // ***************************************I think this can be incorporated else where
-  // setUiFavs (){
-  //   const favorites = currentUser.favorites;
-  //   const favoriteIds = favorites.map(function(story){
-  //     return story.storyId;
-  //   })
-  //   favoriteIds.forEach(function(id){
-  //     try{
-  //       $(`#${id} > i`).removeClass("fa-regular").addClass("fa-solid")
-  //     }
-  //     catch{
-  //       return
-  //     }
-  //   })
-  // }
-  
-  // **************************rename and simplify/rework? 
-  //  possibly use this ----- $('element').on('click', '# or .?', function())
-  // should this be two different functions? one to update API and one to update UI?
-  // 
-
-  async favStoryToggle (evt){
+  async favAndRemoveActions (evt){
     const $evtTarget = $(evt.target);
     if($evtTarget.hasClass('no-fav')){
-      $evtTarget.
+      $evtTarget.parent().toggleClass('hidden');
+      $evtTarget.parent().siblings('.fav').toggleClass('hidden');
+
+      const $favoriteID = $evtTarget.parent().parent().attr('id')
+
+      await axios.post(`${BASE_URL}/users/${currentUser.username}/favorites/${$favoriteID}`, 
+        { token : currentUser.loginToken});
+      currentUser = await User.updateCurrentUser();
+    }
+    if($evtTarget.hasClass('fav')){
+      $evtTarget.parent().toggleClass('hidden');
+      $evtTarget.parent().siblings('.no-fav').toggleClass('hidden');
+
+      const $favoriteID = $evtTarget.parent().parent().attr('id');
+
+      await axios.delete(`${BASE_URL}/users/${currentUser.username}/favorites/${$favoriteID}`, 
+        { params:{ token : currentUser.loginToken}});
+      currentUser = await User.updateCurrentUser()
+    }
+    if($evtTarget.hasClass('delete')){
+      $evtTarget.parent().parent().toggleClass('hidden');
+
+      const $storyId = $evtTarget.parent().parent().attr('id');
+      await axios.delete(`${BASE_URL}/stories/${$storyId}`, 
+        { params:{ token : currentUser.loginToken}});
+      currentUser = await User.updateCurrentUser()
     }
   }
-  
-
-
 }
-
-
-// if($(evt.target).hasClass('fav')){
-  //     $(evt.target).toggleClass("fa-regular fa-solid")
-  //     const $favoriteID = $(evt.target).parent().attr('id')
-
-  //     if ($(evt.target).hasClass('fa-solid')){
-  //       console.log($favoriteID)
-  //       await axios.post(`${BASE_URL}/users/${currentUser.username}/favorites/${$favoriteID}`, 
-  //       { token : currentUser.loginToken});
-  //       currentUser = await User.updateCurrentUser()
-  //     }
-  //     if ($(evt.target).hasClass('fa-regular')){
-  //       await axios.delete(`${BASE_URL}/users/${currentUser.username}/favorites/${$favoriteID}`, 
-  //       { params:{ token : currentUser.loginToken}})
-  //       currentUser = await User.updateCurrentUser()
-  //     }
-  //   }
-  //   if($(evt.target).hasClass('delete')){
-  //     const $storyId = $(evt.target).parent().attr('id')
-      
-  //     await axios.delete(`${BASE_URL}/stories/${$storyId}`, 
-  //       { params:{ token : currentUser.loginToken}})
-  //       currentUser = await User.updateCurrentUser()
-  //   }
-  // }
