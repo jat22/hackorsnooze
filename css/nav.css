@@ -1,5 +1,6 @@
 /* Navigation bar */
 
+
 nav {
   display: flex;
   background-color: #ff6600;
@@ -20,4 +21,9 @@ nav {
 .nav-right {
   margin-left: auto;
   text-align: right;
+}
+
+.nav-left{
+  margin-left: 5px;
+
 }

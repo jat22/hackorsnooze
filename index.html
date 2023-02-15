@@ -37,10 +37,11 @@
   <div class="navbar-brand">
     <a class="nav-link" href="#" id="nav-all">Hack or Snooze</a>
   </div>
+  
   <div class="nav-left">
-    <a class="main-nav-links hidden" href="#" id="nav-submit">submit</a>
-    <a class="main-nav-links hidden" href="#" id="nav-favorites">favorites</a>
-    <a class="main-nav-links hidden" href="#" id="nav-mystories">my stories</a>
+    <a class="nav-link main-nav-links hidden" href="#" id="nav-submit">submit</a>
+    <a class="nav-link main-nav-links hidden" href="#" id="nav-favorites">favorites</a>
+    <a class="nav-link main-nav-links hidden" href="#" id="nav-mystories">my stories</a>
   </div>
   <div class="nav-right">
     <a class="nav-link" href="#" id="nav-login">login/signup</a>
@@ -70,7 +71,8 @@
 
 <!-- area for stories (all stories, user stories, favorites) -->
 <section id="stories-container" class="container">
-
+  <div id="no-favorites" class="stories-list hidden">You haven't selected any favorites</div>
+  <div id="no-own-stories" class="stories-list hidden">You haven't added any stories.</div>
   <!-- loading message (removed by JS after stories loaded) -->
   <div id="stories-loading-msg">Loading&hellip;</div>
 

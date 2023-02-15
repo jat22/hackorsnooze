@@ -43,7 +43,8 @@ function navSubmitStory (evt){
 $navSubmit.on('click', navSubmitStory)
 
 function navFavorites() {
-  hidePageComponents()
+  hidePageComponents();
+
   putStoriesOnPage(currentUser.favorites);
 }
 
@@ -56,4 +57,4 @@ function navMyStories() {
 }
 
 // **************************fix typo and update across app (nave to nav)
-$naveMyStories.on('click', navMyStories);
+$navMyStories.on('click', navMyStories);
